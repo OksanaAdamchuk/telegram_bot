@@ -38,11 +38,11 @@ async def command_start_handler(message: Message) -> None:
 
 
 # Define a command to start a conversation with AI
-@dp.message(Command(commands='ask'))
+@dp.message(Command(commands="ask"))
 async def ask_question(message: types.Message):
     # Use OpenAI to generate a question
     ai_question = generate_ai_question()
-    
+
     # Send the AI-generated question to the user
 
     ai_developer_answer = generate_ai_developer_answer(ai_question)
@@ -57,7 +57,10 @@ async def ask_question(message: types.Message):
 async def chat_gpt(message: types.Message) -> None:
     existing_ideas = [idea["function_idea"] for idea in get_ideas()]
     # Define a system message to set the behavior or context of the assistant.
-    system_message = {"role": "system", "content": f"You are a helpful assistant, that checks what functions are in the DB ({', '.join(existing_ideas)}) and if user question is about one of them answers user. But if user's question not about one of DB functions you appologies that can't provide information about something that not in the DB."}
+    system_message = {
+        "role": "system",
+        "content": f"You are a helpful assistant, that checks what functions are in the DB ({', '.join(existing_ideas)}) and if user question is about one of them answers user. But if user's question not about one of DB functions you appologies that can't provide information about something that not in the DB.",
+    }
 
     # Create a user message using the content of the received message.
     user_message = {"role": "user", "content": message.text}
@@ -66,13 +69,10 @@ async def chat_gpt(message: types.Message) -> None:
     conversation = [system_message, user_message]
 
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=conversation,
-        temperature=0.8,
-        max_tokens=526
+        model="gpt-3.5-turbo", messages=conversation, temperature=0.8, max_tokens=526
     )
 
-    assistant_response = response.choices[0].message['content']
+    assistant_response = response.choices[0].message["content"]
 
     await message.reply(assistant_response)
 
@@ -84,7 +84,7 @@ def generate_ai_question():
     # Create a message instructing OpenAI to analyze previous answers
     user_message = {
         "role": "user",
-        "content": f"Analyze all your previous answers, that are in the DB ({', '.join(existing_ideas)}), and generate an idea of the function that is not in DB yet. Don't write code of that function."
+        "content": f"Analyze all your previous answers, that are in the DB ({', '.join(existing_ideas)}), and generate an idea of the function that is not in DB yet. Don't write code of that function.",
     }
 
     # Use OpenAI to generate an AI question
@@ -98,7 +98,7 @@ def generate_ai_question():
         max_tokens=128,
     )
 
-    ai_answer = response.choices[0]['message']['content']
+    ai_answer = response.choices[0]["message"]["content"]
 
     # Check if the generated question already exists in the database
     if ai_answer not in existing_ideas:
@@ -115,13 +115,16 @@ def generate_ai_developer_answer(ai_question):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful developer."},
-            {"role": "user", "content": f"Write Python code for suggested function: {ai_question}"},
+            {
+                "role": "user",
+                "content": f"Write Python code for suggested function: {ai_question}",
+            },
         ],
         temperature=0.8,
         max_tokens=512,
     )
-    
-    return response.choices[0]['message']['content']
+
+    return response.choices[0]["message"]["content"]
 
 
 def generate_ai_tester_answer(ai_question):
@@ -135,8 +138,8 @@ def generate_ai_tester_answer(ai_question):
         temperature=0.8,
         max_tokens=512,
     )
-    
-    return response.choices[0]['message']['content']
+
+    return response.choices[0]["message"]["content"]
 
 
 async def main() -> None:

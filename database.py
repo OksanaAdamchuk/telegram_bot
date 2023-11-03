@@ -13,6 +13,7 @@ db = client["functions_db"]
 
 ideas_collection = db["ideas"]
 
+
 # Store an idea in the collection
 def store_idea(ai_question: str):
     idea = {
