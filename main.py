@@ -5,7 +5,7 @@ import openai
 import os
 
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, Router, types
+from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
